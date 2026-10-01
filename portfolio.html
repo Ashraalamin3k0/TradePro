@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - TradePro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --accent-gold: #d4af37;
+            --soft-silver: #c0c0c0;
+            --profit-green: #00ff88;
+            --loss-red: #ff4444;
+            --warning-amber: #ffa500;
+            --info-blue: #4a90e2;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        .portfolio-card {
+            transition: all 0.3s ease;
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+        }
+        
+        .price-positive {
+            color: var(--profit-green);
+        }
+        
+        .price-negative {
+            color: var(--loss-red);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease;
+        }
+        
+        .allocation-bar {
+            height: 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-white" style="font-family: 'Playfair Display', serif;">TradePro</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 text-sm font-medium">Dashboard</a>
+                        <a href="portfolio.html" class="nav-link text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium">Portfolio</a>
+                        <a href="analytics.html" class="nav-link text-gray-300 hover:text-yellow-400 px-3 py-2 text-sm font-medium">Analytics</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-4 reveal" style="font-family: 'Playfair Display', serif;">Portfolio Management</h1>
+                <p class="text-gray-300 text-lg reveal">Track your investments and analyze portfolio performance</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Overview -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Portfolio Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="glass-card p-6 portfolio-card reveal">
+                    <h3 class="text-lg font-semibold text-white mb-2">Total Portfolio Value</h3>
+                    <div class="text-3xl font-bold text-white mb-2" style="font-family: 'JetBrains Mono', monospace;">$847,392.50</div>
+                    <div class="flex items-center">
+                        <span class="text-sm price-positive">+12.34%</span>
+                        <span class="text-sm text-gray-400 ml-2">+$93,234.10</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6 portfolio-card reveal">
+                    <h3 class="text-lg font-semibold text-white mb-2">Today's P&L</h3>
+                    <div class="text-3xl font-bold price-positive mb-2" style="font-family: 'JetBrains Mono', monospace;">+$5,678.90</div>
+                    <div class="flex items-center">
+                        <span class="text-sm text-gray-400">Daily Return</span>
+                        <span class="text-sm price-positive ml-2">+0.67%</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6 portfolio-card reveal">
+                    <h3 class="text-lg font-semibold text-white mb-2">Cash Balance</h3>
+                    <div class="text-3xl font-bold text-white mb-2" style="font-family: 'JetBrains Mono', monospace;">$52,607.50</div>
+                    <div class="flex items-center">
+                        <span class="text-sm text-gray-400">Available to Invest</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card p-6 portfolio-card reveal">
+                    <h3 class="text-lg font-semibold text-white mb-2">Sharpe Ratio</h3>
+                    <div class="text-3xl font-bold text-white mb-2" style="font-family: 'JetBrains Mono', monospace;">1.85</div>
+                    <div class="flex items-center">
+                        <span class="text-sm text-gray-400">Risk-Adjusted Return</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Charts and Holdings -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Asset Allocation Chart -->
+                <div class="glass-card p-6 reveal">
+                    <h3 class="text-xl font-semibold text-white mb-6">Asset Allocation</h3>
+                    <div id="allocationChart" style="height: 300px;"></div>
+                    
+                    <!-- Allocation Details -->
+                    <div class="mt-6 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                                <span class="text-white">Stocks</span>
+                            </div>
+                            <span class="text-white font-semibold">65.2%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-white">ETFs</span>
+                            </div>
+                            <span class="text-white font-semibold">22.8%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                                <span class="text-white">Bonds</span>
+                            </div>
+                            <span class="text-white font-semibold">8.5%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                                <span class="text-white">Cash</span>
+                            </div>
+                            <span class="text-white font-semibold">3.5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Chart -->
+                <div class="lg:col-span-2 glass-card p-6 reveal">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-white">Portfolio Performance</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 bg-yellow-400 text-black rounded text-sm font-semibold">1M</button>
+                            <button class="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-yellow-400 hover:text-black transition-colors">3M</button>
+                            <button class="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-yellow-400 hover:text-black transition-colors">6M</button>
+                            <button class="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-yellow-400 hover:text-black transition-colors">1Y</button>
+                            <button class="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-yellow-400 hover:text-black transition-colors">ALL</button>
+                        </div>
+                    </div>
+                    <div id="performanceChart" style="height: 350px;"></div>
+                </div>
+            </div>
+
+            <!-- Holdings Table -->
+            <div class="glass-card p-6 mt-8 reveal">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-white">Holdings</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-4 py-2 bg-yellow-400 text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors">Add Position</button>
+                        <button class="px-4 py-2 border border-yellow-400 text-yellow-400 rounded-lg font-semibold hover:bg-yellow-400 hover:text-black transition-colors">Export</button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3 px-4 text-gray-300">Symbol</th>
+                                <th class="text-left py-3 px-4 text-gray-300">Company</th>
+                                <th class="text-right py-3 px-4 text-gray-300">Shares</th>
+                                <th class="text-right py-3 px-4 text-gray-300">Avg Cost</th>
+                                <th class="text-right py-3 px-4 text-gray-300">Current Price</th>
+                                <th class="text-right py-3 px-4 text-gray-300">Market Value</th>
+                                <th class="text-right py-3 px-4 text-gray-300">P&L</th>
+                                <th class="text-right py-3 px-4 text-gray-300">Weight</th>
+                                <th class="text-center py-3 px-4 text-gray-300">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdingsTable">
+                            <!-- Holdings will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Risk Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div class="glass-card p-6 reveal">
+                    <h3 class="text-xl font-semibold text-white mb-6">Risk Metrics</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Beta</span>
+                            <span class="text-white font-semibold">1.23</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Alpha (1Y)</span>
+                            <span class="text-white font-semibold">4.56%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Max Drawdown</span>
+                            <span class="text-white font-semibold">-8.90%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">Volatility</span>
+                            <span class="text-white font-semibold">16.45%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300">VaR (95%)</span>
+                            <span class="text-white font-semibold">-$12,456</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 reveal">
+                    <h3 class="text-xl font-semibold text-white mb-6">Sector Allocation</h3>
+                    <div id="sectorChart" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black bg-opacity-90 py-12 px-4 sm:px-6 lg:px-8 mt-16">
+        <div class="max-w-7xl mx-auto text-center">
+            <h3 class="text-2xl font-bold text-white mb-4" style="font-family: 'Playfair Display', serif;">TradePro</h3>
+            <p class="text-gray-400 mb-6">Professional trading platform for serious investors</p>
+            <p class="text-gray-500 text-sm">© 2024 TradePro. All rights reserved. Trading involves risk. Past performance does not guarantee future results.</p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
