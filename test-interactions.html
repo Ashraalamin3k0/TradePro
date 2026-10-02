@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradePro Interaction Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #333; border-radius: 8px; }
+        .test-button { margin: 5px; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .success { background: #00ff88; color: black; }
+        .error { background: #ff4444; color: white; }
+        .warning { background: #ffa500; color: black; }
+        .info { background: #4a90e2; color: white; }
+        .test-result { margin-top: 10px; padding: 10px; border-radius: 5px; }
+        .passed { background: rgba(0, 255, 136, 0.2); border: 1px solid #00ff88; }
+        .failed { background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="max-w-4xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-8 text-center">TradePro Interaction Test Suite</h1>
+        
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">1. Navigation Tests</h2>
+            <button class="test-button success" onclick="testNavigation('index.html')">Test Dashboard Navigation</button>
+            <button class="test-button success" onclick="testNavigation('portfolio.html')">Test Portfolio Navigation</button>
+            <button class="test-button success" onclick="testNavigation('analytics.html')">Test Analytics Navigation</button>
+            <div id="navigation-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">2. Button Click Tests</h2>
+            <button class="test-button info" onclick="testButtonClicks()">Test All Button Clicks</button>
+            <div id="button-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">3. Form Interaction Tests</h2>
+            <button class="test-button warning" onclick="testFormInteractions()">Test Form Interactions</button>
+            <div id="form-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">4. Chart Interaction Tests</h2>
+            <button class="test-button info" onclick="testChartInteractions()">Test Chart Interactions</button>
+            <div id="chart-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">5. Modal Tests</h2>
+            <button class="test-button success" onclick="testModals()">Test Modal Functions</button>
+            <div id="modal-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">6. Real-time Updates</h2>
+            <button class="test-button warning" onclick="testRealTimeUpdates()">Test Real-time Data</button>
+            <div id="realtime-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">7. Animation Tests</h2>
+            <button class="test-button info" onclick="testAnimations()">Test Animations</button>
+            <div id="animation-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">8. All Tests</h2>
+            <button class="test-button success" onclick="runAllTests()">Run All Tests</button>
+            <div id="all-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">Test Summary</h2>
+            <div id="test-summary" class="text-lg font-semibold"></div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            passed: 0,
+            failed: 0,
+            total: 0
+        };
+
+        function addTestResult(testName, passed, message = '') {
+            testResults.total++;
+            if (passed) {
+                testResults.passed++;
+            } else {
+                testResults.failed++;
+            }
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'passed' : 'failed'}`;
+            resultDiv.innerHTML = `
+                <strong>${testName}:</strong> ${passed ? 'PASSED' : 'FAILED'}
+                ${message ? `<br><small>${message}</small>` : ''}
+            `;
+            return resultDiv;
+        }
+
+        function testNavigation(page) {
+            const resultsDiv = document.getElementById('navigation-results');
+            resultsDiv.innerHTML = '';
+
+            try {
+                // Test if page exists by checking if we can access it
+                fetch(page)
+                    .then(response => {
+                        const passed = response.ok;
+                        resultsDiv.appendChild(addTestResult(
+                            `Navigation to ${page}`,
+                            passed,
+                            passed ? 'Page loaded successfully' : 'Page not found'
+                        ));
+                    })
+                    .catch(() => {
+                        resultsDiv.appendChild(addTestResult(
+                            `Navigation to ${page}`,
+                            false,
+                            'Network error or page not found'
+                        ));
+                    });
+            } catch (error) {
+                resultsDiv.appendChild(addTestResult(
+                    `Navigation to ${page}`,
+                    false,
+                    error.message
+                ));
+            }
+        }
+
+        function testButtonClicks() {
+            const resultsDiv = document.getElementById('button-results');
+            resultsDiv.innerHTML = '';
+
+            // Test buttons that should exist
+            const buttonsToTest = [
+                { selector: 'button:contains("Start Trading")', name: 'Start Trading Button' },
+                { selector: 'button:contains("View Demo")', name: 'View Demo Button' },
+                { selector: 'button:contains("Add Symbol")', name: 'Add Symbol Button' },
+                { selector: 'button:contains("Place Buy Order")', name: 'Buy Order Button' },
+                { selector: 'button:contains("Place Sell Order")', name: 'Sell Order Button' },
+                { selector: 'button:contains("Export")', name: 'Export Button' }
+            ];
+
+            buttonsToTest.forEach(btn => {
+                try {
+                    const button = document.querySelector(btn.selector);
+                    const passed = button !== null;
+                    resultsDiv.appendChild(addTestResult(
+                        btn.name,
+                        passed,
+                        passed ? 'Button found in DOM' : 'Button not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        btn.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function testFormInteractions() {
+            const resultsDiv = document.getElementById('form-results');
+            resultsDiv.innerHTML = '';
+
+            // Test form inputs
+            const inputsToTest = [
+                { selector: 'input[placeholder="Quantity"]', name: 'Quantity Input' },
+                { selector: 'input[placeholder="Price"]', name: 'Price Input' },
+                { selector: 'input[placeholder="Symbol"]', name: 'Symbol Input' }
+            ];
+
+            inputsToTest.forEach(input => {
+                try {
+                    const element = document.querySelector(input.selector);
+                    const passed = element !== null;
+                    resultsDiv.appendChild(addTestResult(
+                        input.name,
+                        passed,
+                        passed ? 'Input found in DOM' : 'Input not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        input.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function testChartInteractions() {
+            const resultsDiv = document.getElementById('chart-results');
+            resultsDiv.innerHTML = '';
+
+            // Test chart containers
+            const chartsToTest = [
+                { selector: '#tradingChart', name: 'Trading Chart' },
+                { selector: '#allocationChart', name: 'Allocation Chart' },
+                { selector: '#performanceChart', name: 'Performance Chart' },
+                { selector: '#sectorChart', name: 'Sector Chart' },
+                { selector: '#heatMapChart', name: 'Heat Map Chart' },
+                { selector: '#sentimentChart', name: 'Sentiment Chart' }
+            ];
+
+            chartsToTest.forEach(chart => {
+                try {
+                    const element = document.querySelector(chart.selector);
+                    const passed = element !== null;
+                    resultsDiv.appendChild(addTestResult(
+                        chart.name,
+                        passed,
+                        passed ? 'Chart container found' : 'Chart container not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        chart.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function testModals() {
+            const resultsDiv = document.getElementById('modal-results');
+            resultsDiv.innerHTML = '';
+
+            // Test modal functions exist
+            const modalFunctions = [
+                { func: 'showAddPositionModal', name: 'Add Position Modal' },
+                { func: 'showOrderConfirmation', name: 'Order Confirmation Modal' },
+                { func: 'showTradeModal', name: 'Trade Modal' },
+                { func: 'showAddSymbolModal', name: 'Add Symbol Modal' }
+            ];
+
+            modalFunctions.forEach(modal => {
+                try {
+                    const func = window[modal.func];
+                    const passed = typeof func === 'function';
+                    resultsDiv.appendChild(addTestResult(
+                        modal.name,
+                        passed,
+                        passed ? 'Modal function exists' : 'Modal function not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        modal.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function testRealTimeUpdates() {
+            const resultsDiv = document.getElementById('realtime-results');
+            resultsDiv.innerHTML = '';
+
+            // Test real-time update functions
+            const updateFunctions = [
+                { func: 'startRealTimeUpdates', name: 'Real-time Updates' },
+                { func: 'updateWatchlistPrices', name: 'Watchlist Updates' },
+                { func: 'updateMarketCards', name: 'Market Card Updates' },
+                { func: 'updateHoldingsPrices', name: 'Holdings Updates' }
+            ];
+
+            updateFunctions.forEach(update => {
+                try {
+                    const func = window[update.func];
+                    const passed = typeof func === 'function';
+                    resultsDiv.appendChild(addTestResult(
+                        update.name,
+                        passed,
+                        passed ? 'Update function exists' : 'Update function not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        update.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function testAnimations() {
+            const resultsDiv = document.getElementById('animation-results');
+            resultsDiv.innerHTML = '';
+
+            // Test animation functions
+            const animationFunctions = [
+                { func: 'initScrollReveal', name: 'Scroll Reveal' },
+                { func: 'initLiquidBackground', name: 'Liquid Background' },
+                { func: 'showNotification', name: 'Notification System' }
+            ];
+
+            animationFunctions.forEach(anim => {
+                try {
+                    const func = window[anim.func];
+                    const passed = typeof func === 'function';
+                    resultsDiv.appendChild(addTestResult(
+                        anim.name,
+                        passed,
+                        passed ? 'Animation function exists' : 'Animation function not found'
+                    ));
+                } catch (error) {
+                    resultsDiv.appendChild(addTestResult(
+                        anim.name,
+                        false,
+                        error.message
+                    ));
+                }
+            });
+        }
+
+        function runAllTests() {
+            const resultsDiv = document.getElementById('all-results');
+            resultsDiv.innerHTML = '<p class="text-yellow-400">Running all tests...</p>';
+
+            // Reset results
+            testResults = { passed: 0, failed: 0, total: 0 };
+
+            setTimeout(() => {
+                testNavigation('index.html');
+                testButtonClicks();
+                testFormInteractions();
+                testChartInteractions();
+                testModals();
+                testRealTimeUpdates();
+                testAnimations();
+
+                setTimeout(() => {
+                    updateTestSummary();
+                    resultsDiv.innerHTML = '<p class="text-green-400">All tests completed!</p>';
+                }, 2000);
+            }, 1000);
+        }
+
+        function updateTestSummary() {
+            const summaryDiv = document.getElementById('test-summary');
+            const passRate = ((testResults.passed / testResults.total) * 100).toFixed(1);
+            
+            summaryDiv.innerHTML = `
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="p-4 bg-green-600 rounded">
+                        <div class="text-2xl font-bold">${testResults.passed}</div>
+                        <div class="text-sm">Passed</div>
+                    </div>
+                    <div class="p-4 bg-red-600 rounded">
+                        <div class="text-2xl font-bold">${testResults.failed}</div>
+                        <div class="text-sm">Failed</div>
+                    </div>
+                    <div class="p-4 bg-blue-600 rounded">
+                        <div class="text-2xl font-bold">${passRate}%</div>
+                        <div class="text-sm">Pass Rate</div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    Total Tests: ${testResults.total}
+                </div>
+            `;
+        }
+
+        // Initialize test suite
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some basic styling for test results
+            const style = document.createElement('style');
+            style.textContent = `
+                .test-result { margin: 5px 0; padding: 10px; border-radius: 5px; }
+                .passed { background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; }
+                .failed { background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
